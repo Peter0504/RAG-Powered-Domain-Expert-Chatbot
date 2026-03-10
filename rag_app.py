@@ -380,23 +380,27 @@ class VectorStore:
 
     def semantic_search(self, query: str, k: int = 20) -> list[dict]:
         """Return top-k results by cosine similarity."""
+        count = self.collection.count()
+        if count == 0:
+            return []
         embedding = self.embed_single(query)
         results = self.collection.query(
             query_embeddings=[embedding],
-            n_results=min(k, self.collection.count()),
+            n_results=min(k, count),
             include=["documents", "metadatas", "distances"],
         )
         hits = []
-        for doc, meta, dist in zip(
-            results["documents"][0],
-            results["metadatas"][0],
-            results["distances"][0],
-        ):
-            hits.append({
-                "text": doc,
-                "metadata": meta,
-                "score": 1 - dist,  # cosine distance -> similarity
-            })
+        if results["documents"] and results["documents"][0]:
+            for doc, meta, dist in zip(
+                results["documents"][0],
+                results["metadatas"][0],
+                results["distances"][0],
+            ):
+                hits.append({
+                    "text": doc,
+                    "metadata": meta,
+                    "score": 1 - dist,  # cosine distance -> similarity
+                })
         return hits
 
 # ---------------------------------------------------------------------------
@@ -759,6 +763,16 @@ def build_ui(pipeline: RAGPipeline) -> gr.Blocks:
         def respond(user_message: str, chat_history: list):
             if not user_message.strip():
                 return "", chat_history, ""
+
+            # Guard: check if any documents are indexed
+            if pipeline.vector_store.collection.count() == 0:
+                answer = (
+                    "⚠️ No documents have been indexed yet. Please add at least 50 documents "
+                    "(PDF, DOCX, HTML, TXT, or MD files) to the `./documents/` folder and "
+                    "restart the application."
+                )
+                chat_history = chat_history + [[user_message, answer]]
+                return "", chat_history, '<div class="status-bar">No documents indexed.</div>'
 
             answer, sources = pipeline.query(user_message)
             chat_history = chat_history + [[user_message, answer]]

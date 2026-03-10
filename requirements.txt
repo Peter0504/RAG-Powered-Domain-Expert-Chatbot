@@ -1,0 +1,12 @@
+chromadb
+sentence-transformers
+gradio
+openai
+pymupdf
+python-docx
+beautifulsoup4
+rank_bm25
+nltk
+tiktoken
+numpy
+

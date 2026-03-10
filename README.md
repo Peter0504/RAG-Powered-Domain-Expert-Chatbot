@@ -23,3 +23,34 @@ Ensure the main script is saved as `rag_app.py`.
 Open your terminal or command prompt, navigate to the project folder, and run:
 ```bash
 pip install chromadb sentence-transformers gradio openai pymupdf python-docx beautifulsoup4 rank_bm25 nltk tiktoken numpy
+```
+## 🚀 How to Run the Application
+You must set your OpenAI API key as an environment variable before running the script. Open your terminal or command prompt in the project folder and run the commands specific to your operating system:
+
+### For Windows (Command Prompt):
+
+```DOS
+set OPENAI_API_KEY="sk-your-api-key-here"
+python rag_app.py
+```
+### For Windows (PowerShell):
+
+```PowerShell
+$env:OPENAI_API_KEY="sk-your-api-key-here"
+python rag_app.py
+```
+### For Mac / Linux:
+
+```Bash
+export OPENAI_API_KEY="sk-your-api-key-here"
+python rag_app.py
+```
+## 💻 Usage
+On the first run, the system will read your documents folder, chunk the text, and build the ChromaDB and BM25 databases. This may take a few minutes depending on the number of files.
+
+Once indexing is complete, a local web server will start.
+
+Look for a URL in your terminal (usually http://127.0.0.0:7860 or similar) and open it in your web browser to start chatting with your documents!
+
+## ⚙️ Advanced Configuration
+If you want to tweak how the application works, open rag_app.py and modify the Config class near the top of the file. You can adjust chunk sizes, memory length, change the embedding model, or modify the hybrid search weights.
